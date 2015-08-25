@@ -5,10 +5,12 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "http://dl.bintray.com/classmethod/maven" }
+        jcenter()
 
     }
     dependencies {
         classpath 'jp.classmethod.aws:gradle-aws-plugin:0.19'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
     }
 }
 
@@ -31,6 +33,7 @@ dependencies {
 
 apply plugin: 'aws-s3'
 apply plugin: "aws-lambda"
+apply plugin: 'com.github.johnrengelman.shadow'
 
 aws {
     profileName 'default'
@@ -44,15 +47,19 @@ task s3sync(type: jp.classmethod.aws.gradle.s3.SyncTask) {
     source file('src/main/resources')
 }
 
-task zip(type: Zip) {
-    from file("build/classes/main")
-    destinationDir file("build")
-}
 
-task deployLambda(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: zip) {
+task deployLambda(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
     functionName = "whTestTemplate"
     runtime = "java8"
-    zipFile = zip.archivePath
+    zipFile = shadowJar.archivePath
     role = "arn:aws:iam::622978156339:role/lambda_basic_execution"
     handler = "at.willhaben.aws.test.Main::myHandler"
+
 }
+
+shadowJar {
+    dependencies {
+        exclude(dependency('com.amazonaws:.*:.*'))
+    }
+}
+
