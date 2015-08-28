@@ -24,7 +24,7 @@ import java.util.Map;
 public class CastVote {
 
     public static void main(String[] args) {
-        UpdateItemOutcome asdf = new CastVote().vote(new Vote("12345", "22asdf"));
+        new CastVote().vote(new Vote("asdf", "asdf"));
         int i = 0;
     }
 
@@ -38,14 +38,14 @@ public class CastVote {
         LambdaLogger logger = context.getLogger();
         logger.log("received : " + vote.getTokenId());
 
-        UpdateItemOutcome updated = vote(vote);
+        vote(vote);
 
         logger.log("voted");
 
         return vote.getVote();
     }
 
-    private UpdateItemOutcome vote(Vote vote) {
+    private void vote(Vote vote) {
         AmazonDynamoDBClient client = new AmazonDynamoDBClient();
         client.setRegion(Region.getRegion(Regions.EU_WEST_1));
         DynamoDB dynamoDB = new DynamoDB(client);
@@ -54,20 +54,20 @@ public class CastVote {
         Table table = dynamoDB.getTable("wh-voting");
 
         Item item = table.getItem("token", vote.getTokenId());
+        if (item.asMap().get("vote") == null) {
+            UpdateItemSpec updateItemSpec = new UpdateItemSpec()
+                    .withPrimaryKey("token", vote.getTokenId())
+                    .withUpdateExpression("set #vote = :vote")
+                    .withNameMap(new NameMap().with("#vote", "vote"))
+                    .withValueMap(new ValueMap().withString(":vote", vote.getVote()))
+                    .withReturnValues(ReturnValue.UPDATED_NEW);
 
-        UpdateItemSpec updateItemSpec = new UpdateItemSpec()
-                .withPrimaryKey("token", vote.getTokenId())
-                .withUpdateExpression("set #vote = :vote")
-                .withNameMap(new NameMap().with("#vote", "vote"))
-                .withValueMap(new ValueMap().withString(":vote", vote.getVote()))
-                .withReturnValues(ReturnValue.UPDATED_NEW);
 
+            table.updateItem(updateItemSpec);
+            String project = (String) item.asMap().get("project");
+            votingResult(project, vote.getVote(), dynamoDB, client);
+        }
 
-
-        String project = (String) item.asMap().get("project");
-        votingResult(project, vote.getVote(), dynamoDB, client);
-
-        return table.updateItem(updateItemSpec);
     }
 
     private void votingResult(String project, String vote, DynamoDB dynamoDB, AmazonDynamoDBClient client) {
