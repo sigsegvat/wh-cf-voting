@@ -1,4 +1,4 @@
-angular.module('whVotingApp', [
+var whVotingApp = angular.module('whVotingApp', [
     'ngRoute',
     'indexController',
     'resultController'
