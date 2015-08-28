@@ -73,5 +73,13 @@ task deployCastVote(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunct
     handler = "at.willhaben.aws.cfvoting.CastVote::myHandler"
 }
 
+task deployResult(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+    functionName = "ResultVote"
+    runtime = "java8"
+    zipFile = shadowJar.archivePath
+    role = "arn:aws:iam::622978156339:role/lambda_basic_execution"
+    handler = "at.willhaben.aws.cfvoting.Result::myHandler"
+}
+
 
 
