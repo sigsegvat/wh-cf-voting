@@ -1,1 +1,5 @@
-index
+<div ng-show="votingModel">
+    <select ng-model="votingModel" ng-options="o as o for o in votingOptions"></select>
+    <input type="button" value="vote" ng-click="vote(votingModel)"/>
+</div>
+
