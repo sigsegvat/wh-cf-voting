@@ -3,6 +3,9 @@ package at.willhaben.aws.test;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
+/**
+ * AWS Lambda Class
+ */
 public class Main {
 
     public static void main(String[] args) {
