@@ -10,13 +10,12 @@ import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ReturnValue;
+import com.amazonaws.services.dynamodbv2.model.*;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
-
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -54,6 +53,8 @@ public class CastVote {
 
         Table table = dynamoDB.getTable("wh-voting");
 
+        Item item = table.getItem("token", vote.getTokenId());
+
         UpdateItemSpec updateItemSpec = new UpdateItemSpec()
                 .withPrimaryKey("token", vote.getTokenId())
                 .withUpdateExpression("set #vote = :vote")
@@ -62,8 +63,37 @@ public class CastVote {
                 .withReturnValues(ReturnValue.UPDATED_NEW);
 
 
-        return table.updateItem(updateItemSpec);
 
+        String project = (String) item.asMap().get("project");
+        votingResult(project, vote.getVote(), dynamoDB, client);
+
+        return table.updateItem(updateItemSpec);
+    }
+
+    private void votingResult(String project, String vote, DynamoDB dynamoDB, AmazonDynamoDBClient client) {
+        Table table = dynamoDB.getTable("wh-voting-result");
+
+        Item item = table.getItem("project", project);
+        if (item == null) {
+            table.putItem(new Item().
+                    withPrimaryKey("project", project).
+                    withNumber(vote, 1));
+        } else {
+            Map<String, AttributeValue> keyMap = new HashMap<>();
+            keyMap.put("project", new AttributeValue(project));
+
+            Map<String, AttributeValueUpdate> map = new HashMap<>();
+            AttributeValueUpdate update = new AttributeValueUpdate().withAction(AttributeAction.ADD);
+            map.put(vote, update);
+            UpdateItemRequest updateItemRequest = new UpdateItemRequest()
+                    .withTableName("wh-voting-result")
+                    .withKey(keyMap)
+                    .addAttributeUpdatesEntry(
+                            vote, new AttributeValueUpdate()
+                                    .withValue(new AttributeValue().withN("1"))
+                                    .withAction(AttributeAction.ADD));
+            client.updateItem(updateItemRequest);
+        }
     }
 
 }
