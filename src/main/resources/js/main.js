@@ -1,7 +1,6 @@
+
 var whVotingApp = angular.module('whVotingApp', [
-    'ngRoute',
-    'indexController',
-    'resultController'
+    'ngRoute'
 ]);
 
 whVotingApp.config(['$routeProvider',
@@ -13,32 +12,22 @@ whVotingApp.config(['$routeProvider',
                 }).
                 when('/result', {
                     templateUrl: 'tpl/result.tpl.html',
-                    controller: 'resultController'
-                })
-                .otherwise({
-                    redirectTo: '/'
-                })
-            ;
+                    controller: 'resultController',
+                    resolve: {
+                        access:  function($facebook) { return $facebook.loginStatus(); }
+                    }
+                });
         }]
 );
 
 whVotingApp.run(function ($rootScope, $location) {
     $rootScope.$on("$routeChangeError", function () {
         $location.path("/");
-        alert(1);
     });
 });
 
-var indexController = angular.module('indexController', []);
-indexController.controller('indexController', ['$scope',
+whVotingApp.controller('indexController', ['$scope',
     function($scope) {
-        alert(1);
-    }])
-;
-
-var resultController = angular.module('resultController', []);
-resultController.controller('resultController', ['$scope',
-    function($scope) {
-        alert(2);
-    }])
-;
+        console.log("test");
+    }
+]);
