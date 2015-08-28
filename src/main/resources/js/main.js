@@ -5,13 +5,16 @@ var whVotingApp = angular.module('whVotingApp', [
 whVotingApp.config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
-                when('/:token', {
-                    templateUrl: 'tpl/index.tpl.html',
-                    controller: 'indexController'
-                }).
                 when('/result', {
                     templateUrl: 'tpl/result.tpl.html',
                     controller: 'resultController'
+                }).
+                when('/end', {
+                    templateUrl: 'tpl/end.tpl.html',
+                    controller: 'dummy'
+                }).when('/:token', {
+                    templateUrl: 'tpl/index.tpl.html',
+                    controller: 'indexController'
                 });
         }]
 );
@@ -20,6 +23,10 @@ whVotingApp.run(function ($rootScope, $location) {
     $rootScope.$on("$routeChangeError", function () {
         $location.path("/");
     });
+});
+
+whVotingApp.controller('dummy', [], function () {
+
 });
 
 whVotingApp.controller('indexController', ['$scope', '$http', '$routeParams', 'votingService',
@@ -41,11 +48,11 @@ whVotingApp.controller('indexController', ['$scope', '$http', '$routeParams', 'v
     }
 ]);
 
-whVotingApp.service('votingService', function ($http) {
+whVotingApp.service('votingService', function ($http, $location) {
     return {
         vote: function (token, project) {
-            $http.get('https://4k5an0qz1j.execute-api.eu-west-1.amazonaws.com/prod/options?tokenId=' + token + '&vote=' + project)
-            ;
+            $http.get('https://4k5an0qz1j.execute-api.eu-west-1.amazonaws.com/prod/options?tokenId=' + token + '&vote=' + project);
+            $location.path("/end");
         }
     };
 });
