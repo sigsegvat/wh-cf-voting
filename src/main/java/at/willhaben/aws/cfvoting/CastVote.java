@@ -6,14 +6,18 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * AWS Lambda Class for casting one vote
@@ -21,7 +25,8 @@ import java.io.UnsupportedEncodingException;
 public class CastVote {
 
     public static void main(String[] args) {
-        new CastVote().vote(new Vote("12345", "test"));
+        UpdateItemOutcome asdf = new CastVote().vote(new Vote("12345", "22asdf"));
+        int i = 0;
     }
 
     public CastVote() {
@@ -32,14 +37,16 @@ public class CastVote {
     public String myHandler(Vote vote, Context context) throws UnsupportedEncodingException {
 
         LambdaLogger logger = context.getLogger();
-        logger.log("received : " + vote);
+        logger.log("received : " + vote.getTokenId());
 
-        vote(vote);
+        UpdateItemOutcome updated = vote(vote);
 
-        return String.valueOf(vote.getVote());
+        logger.log("voted");
+
+        return vote.getVote();
     }
 
-    private void vote(Vote vote) {
+    private UpdateItemOutcome vote(Vote vote) {
         AmazonDynamoDBClient client = new AmazonDynamoDBClient();
         client.setRegion(Region.getRegion(Regions.EU_WEST_1));
         DynamoDB dynamoDB = new DynamoDB(client);
@@ -47,15 +54,15 @@ public class CastVote {
 
         Table table = dynamoDB.getTable("wh-voting");
 
-        Item item = table.getItem("token", vote.getTokenId());
-
         UpdateItemSpec updateItemSpec = new UpdateItemSpec()
                 .withPrimaryKey("token", vote.getTokenId())
                 .withUpdateExpression("set #vote = :vote")
                 .withNameMap(new NameMap().with("#vote", "vote"))
-                .withValueMap(new ValueMap().withString(":vote", vote.getVote()));
+                .withValueMap(new ValueMap().withString(":vote", vote.getVote()))
+                .withReturnValues(ReturnValue.UPDATED_NEW);
 
-        table.updateItem(updateItemSpec);
+
+        return table.updateItem(updateItemSpec);
 
     }
 

@@ -24,7 +24,7 @@ public class GetOptions {
     public static void main(String[] args) {
         GetOptions getOptions = new GetOptions();
 
-        String[] options = getOptions.getOptions("12345a");
+        String[] options = getOptions.getOptions("12345");
 
         System.out.print(options);
     }
