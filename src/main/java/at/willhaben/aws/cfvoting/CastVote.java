@@ -89,7 +89,7 @@ public class CastVote {
                     .withTableName("wh-voting-result")
                     .withKey(keyMap)
                     .addAttributeUpdatesEntry(
-                            "vote", new AttributeValueUpdate()
+                            vote, new AttributeValueUpdate()
                                     .withValue(new AttributeValue().withN("1"))
                                     .withAction(AttributeAction.ADD));
             client.updateItem(updateItemRequest);
