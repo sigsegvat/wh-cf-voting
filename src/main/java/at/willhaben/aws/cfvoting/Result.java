@@ -33,7 +33,7 @@ public class Result {
         LambdaLogger logger = context.getLogger();
         logger.log("get options for " + projectName);
         return getResult(projectName);
-    }                                                                      k
+    }
 
     private Map<String, Object> getResult(String project) {
         AmazonDynamoDBClient client = new AmazonDynamoDBClient();
