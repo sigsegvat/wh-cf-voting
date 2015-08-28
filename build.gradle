@@ -49,7 +49,7 @@ task s3sync(type: jp.classmethod.aws.gradle.s3.SyncTask) {
 }
 
 
-task deployLambda(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+task deployOptions(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
     functionName = "GetOptions"
     runtime = "java8"
     zipFile = shadowJar.archivePath
@@ -57,7 +57,7 @@ task deployLambda(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctio
     handler = "at.willhaben.aws.cfvoting.GetOptions::myHandler"
 }
 
-task deployLambda2(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+task deployAggregateVotes(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
     functionName = "AggregateVotes"
     runtime = "java8"
     zipFile = shadowJar.archivePath
@@ -65,7 +65,7 @@ task deployLambda2(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFuncti
     handler = "at.willhaben.aws.cfvoting.AggregateVotes::myHandler"
 }
 
-task deployLambda2(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+task deployCastVote(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
     functionName = "CastVote"
     runtime = "java8"
     zipFile = shadowJar.archivePath

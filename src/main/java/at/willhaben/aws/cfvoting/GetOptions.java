@@ -22,11 +22,10 @@ public class GetOptions {
     }
 
 
-    public String myHandler(int myCount, Context context) throws UnsupportedEncodingException {
+    public String[] myHandler(String tokenId, Context context) throws UnsupportedEncodingException {
 
         LambdaLogger logger = context.getLogger();
-        logger.log("received : " + myCount);
-        return String.valueOf(myCount);
+        return new String[]{"a", "b"};
     }
 
 }
