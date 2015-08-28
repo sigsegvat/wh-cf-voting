@@ -9,6 +9,9 @@ import com.amazonaws.util.StringInputStream;
 
 import java.io.UnsupportedEncodingException;
 
+/**
+ * AWS Lambda Class
+ */
 public class Main {
 
     public static void main(String[] args) {
