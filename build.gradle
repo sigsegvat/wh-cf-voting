@@ -50,12 +50,27 @@ task s3sync(type: jp.classmethod.aws.gradle.s3.SyncTask) {
 
 
 task deployLambda(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
-    functionName = "whTestTemplate"
+    functionName = "GetOptions"
     runtime = "java8"
     zipFile = shadowJar.archivePath
     role = "arn:aws:iam::622978156339:role/lambda_basic_execution"
-    handler = "at.willhaben.aws.test.Main::myHandler"
+    handler = "at.willhaben.aws.cfvoting.GetOptions::myHandler"
+}
 
+task deployLambda2(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+    functionName = "AggregateVotes"
+    runtime = "java8"
+    zipFile = shadowJar.archivePath
+    role = "arn:aws:iam::622978156339:role/lambda_basic_execution"
+    handler = "at.willhaben.aws.cfvoting.AggregateVotes::myHandler"
+}
+
+task deployLambda2(type: jp.classmethod.aws.gradle.lambda.AWSLambdaMigrateFunctionTask, dependsOn: shadowJar) {
+    functionName = "CastVote"
+    runtime = "java8"
+    zipFile = shadowJar.archivePath
+    role = "arn:aws:iam::622978156339:role/lambda_basic_execution"
+    handler = "at.willhaben.aws.cfvoting.CastVote::myHandler"
 }
 
 
