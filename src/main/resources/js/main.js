@@ -44,7 +44,13 @@ whVotingApp.controller('indexController', ['$scope', '$http', '$routeParams', 'v
 whVotingApp.service('votingService', function ($http) {
     return {
         vote: function (token, project) {
-            $http.put('https://4k5an0qz1j.execute-api.eu-west-1.amazonaws.com/prod/options/' + token + "/" + project);
+            $http.put('https://4k5an0qz1j.execute-api.eu-west-1.amazonaws.com/prod/options/' + token + "/" + project)
+                .success(function() {
+                    alert('Voting successful!');
+                })
+                .error(function() {
+                    alert('Voting failed!!');
+                });
         }
     };
 });
